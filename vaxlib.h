@@ -60,6 +60,8 @@
 */
 
 
+/* ========================== REGISTROS ========================== */
+
 /* Registro individual do médico. Usaremos apenas os campos necessários. */
 typedef struct
 {
@@ -70,6 +72,23 @@ typedef struct
 } MEDICO;
 
 
+
+/* ========================== PROTÓTIPOS DE FUNÇÕES ========================== */
+
+void swap_reg(MEDICO *med1, MEDICO *med2);
+
+void csv_reg_count(char *filename);
+
+void validate_allocation(void *object);
+
+void exit_program(void);
+
+void bubble_sort(MEDICO *lista_medicos, int tamanho_lista);
+
+void selection_sort(MEDICO *lista_medicos, int tamanho_lista);
+
+/* ========================== FUNÇÕES AUXILIARES ========================== */
+
 /*  Troca dois registros de posição. */
 void swap_reg(MEDICO *med1, MEDICO *med2)
 {
@@ -78,6 +97,30 @@ void swap_reg(MEDICO *med1, MEDICO *med2)
     temp_med = *med1;
     *med1 = *med2;
     *med2 = temp_med;
+}
+
+
+/* Retorna a quantidade de registros em um arquivo CSV. */
+void csv_reg_count(char *filename)
+{
+    int current_char;
+    int reg_count = 0;
+    FILE *file = fopen(filename, "r");
+
+    validate_allocation(file);
+
+    /*  A cada iteração desse loop, um caractere do arquivo é lido e impresso. O loop termina quando é encontrado o caractere especial EOF - End of File. */
+    while((current_char = getc(file)) != EOF)
+    {
+        if (current_char == '\n')
+            reg_count++;
+    }
+    /* O último registo não possui newline, portanto é preciso somar +1 ao total. */
+    reg_count++;
+
+    fclose(file);
+
+    printf("Total: %d registros em %s", reg_count, filename);
 }
 
 
@@ -94,6 +137,18 @@ void validate_allocation(void *object)
 }
 
 
+/* Exibe mensagem de despedida e encerra o programa */
+void exit_program(void)
+{
+    system("cls");
+    printf("Obrigado por usar nosso software!");
+    getch();
+    exit(EXIT_SUCCESS);
+}
+
+
+/* ========================== FUNÇÕES DE SORTING ========================== */
+
 /*  Ordena uma lista de médicos (por ordem crescente de CRM) usando bubble sort. */
 void bubble_sort(MEDICO *lista_medicos, int tamanho_lista)
 {
@@ -103,9 +158,7 @@ void bubble_sort(MEDICO *lista_medicos, int tamanho_lista)
     {
         for (j = 0; j < (tamanho_lista - 1 - i); j++)
         {
-            /* strcmp retorna um valor positivo quando a segunda é menor que a primeira. */
-            // strcmp_result = strcmp(lista_medicos[j].crm, lista_medicos[j+1].crm);
-
+            /* strcmp retorna um valor positivo quando a segunda string vem antes da primeira. */
             if (strcmp(lista_medicos[j].crm, lista_medicos[j+1].crm) > 0 )
                 swap_reg(&lista_medicos[j], &lista_medicos[j+1]);
         }
@@ -124,9 +177,7 @@ void selection_sort(MEDICO *lista_medicos, int tamanho_lista)
 
         for (j = (i + 1); j < tamanho_lista; j++)
         {
-            /* strcmp retorna um valor positivo quando a segunda é menor que a primeira. */
-            // strcmp_result = strcmp(lista_medicos[pos_min].crm, lista_medicos[j].crm);
-
+            /* strcmp retorna um valor positivo quando a segunda string vem antes da primeira. */
             if (strcmp(lista_medicos[pos_min].crm, lista_medicos[j].crm) > 0 )
                 pos_min = j; /* pos_min recebe a posição do menor valor */
         }
@@ -137,28 +188,4 @@ void selection_sort(MEDICO *lista_medicos, int tamanho_lista)
 }
 
 
-/* Retorna a quantidade de registos em um arquivo CSV. */
-void csv_reg_count(char *filename)
-{
-    int current_char;
-    int reg_count = 0;
-    FILE *file = fopen(filename, "r");
 
-    validate_allocation(file);
-    current_char = getc(file);
-
-    /*  A cada iteração desse loop, um caractere do arquivo é lido e impresso. O loop termina quando é encontrado o caractere especial EOF - End of File. */
-    while(current_char != EOF)
-    {
-        if (current_char == '\n')
-            reg_count++;
-        
-        current_char = getc(file);
-    }
-    fclose(file);
-    
-    /* O último registo não possui newline, portanto é preciso somar +1 ao total. */
-    reg_count++;
-    
-    printf("Total: %d registros em %s", reg_count, filename);
-}
